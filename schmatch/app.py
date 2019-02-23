@@ -52,10 +52,12 @@ class Match(db.Model):
     slot = db.relationship('Slot')
 
     left_resource_id = db.Column(db.Integer, db.ForeignKey('resource.id'))
-    left_resource = db.relationship('Resource')
+    left_resource = db.relationship('Resource',
+                                    foreign_keys=[left_resource_id])
 
     right_resource_id = db.Column(db.Integer, db.ForeignKey('resource.id'))
-    right_resource = db.relationship('Resource')
+    right_resource = db.relationship('Resource',
+                                     foreign_keys=[right_resource_id])
 
     description = db.Column(db.String(256))
 
