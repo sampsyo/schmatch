@@ -20,17 +20,18 @@
                         (free)
                     </option>
                     {% if schedule[slot.id] %}
-                    <option value="{{ schedule[slot.id].id }}" selected>
-                        {% if resource.left %}
-                        {{ schedule[slot.id].right_resource.name }}
-                        {% else %}
-                        {{ schedule[slot.id].left_resource.name }}
-                        {% endif %}
+                    {% if resource.left %}
+                    {% set other = schedule[slot.id].right_resource %}
+                    {% else %}
+                    {% set other = schedule[slot.id].left_resource %}
+                    {% endif %}
+                    <option value="{{ other.id }}" selected>
+                        {{ other.name }}
                     </option>
                     {% endif %}
-                    {% for r in availability[slot.id] %}
-                    <option value="{{ r.id }}">
-                        {{ r.name }}
+                    {% for other in availability[slot.id] %}
+                    <option value="{{ other.id }}">
+                        {{ other.name }}
                     </option>
                     {% endfor %}
                 </select>
