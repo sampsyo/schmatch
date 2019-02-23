@@ -129,10 +129,43 @@ def resources():
     return render_template('resources.html', resources=resources)
 
 
-@app.route('/schedules/<int:id>')
+@app.route('/schedules/<int:id>', methods=['GET', 'POST'])
 def resource(id):
     resource = Resource.query.get(id)
     slots = Slot.query.all()
+
+    # Update the schedule.
+    if request.method == 'POST':
+        # Remove all the old matches.
+        resource.matches().delete()
+
+        for slot in slots:
+            slot_key = 'slot_{}'.format(slot.id)
+            if slot_key in request.form:
+                slot_value = request.form[slot_key]
+
+                # The slot value is either "none" or the ID of an entity
+                # to schedule.
+                if slot_value != 'none':
+                    # Add a match in this slot.
+                    rsrc_id = int(slot_value)
+                    if resource.left:
+                        match = Match(
+                            slot_id=slot.id,
+                            left_resource_id=resource.id,
+                            right_resource_id=rsrc_id,
+                        )
+                    else:
+                        match = Match(
+                            slot_id=slot.id,
+                            left_resource_id=rsrc_id,
+                            right_resource_id=resource.id,
+                        )
+                    db.session.add(match)
+
+        db.session.commit()
+
+    # Show current schedule and availability.
     avail = {s.id: get_availability(s, not resource.left) for s in slots}
     print(avail)
     return render_template(
