@@ -44,6 +44,9 @@ class Slot(db.Model):
 
     matches = db.relationship("Match", lazy=True)
 
+    def __repr__(self):
+        return '<Slot {!r}>'.format(self.name)
+
 
 class Match(db.Model):
     """A *match* describes the resource binding in a given slot. It can
@@ -72,6 +75,13 @@ class Match(db.Model):
 
     description = db.Column(db.String(256))
 
+    def __repr__(self):
+        return '<Match slot={} left={} right={}>'.format(
+            self.slot_id,
+            self.left_resource_id,
+            self.right_resource_id,
+        )
+
 
 def get_schedule(resource, slots):
     """Given a list of slots, get a mapping from slot IDs to matches
@@ -89,9 +99,9 @@ def get_availability(slot, left=False):
     """
     # Find all the resource IDs that are taken in this slot.
     if left:
-        taken_resources = [m.left_resource.id for m in slot.matches]
+        taken_resources = [m.left_resource_id for m in slot.matches]
     else:
-        taken_resources = [m.right_resource.id for m in slot.matches]
+        taken_resources = [m.right_resource_id for m in slot.matches]
     taken_resources = [i for i in taken_resources if i is not None]
 
     # Get all the resources not in this list.
@@ -151,15 +161,15 @@ def resource(id):
                     rsrc_id = int(slot_value)
                     if resource.left:
                         match = Match(
-                            slot=slot,
-                            left_resource=resource,
+                            slot_id=slot.id,
+                            left_resource_id=resource.id,
                             right_resource_id=rsrc_id,
                         )
                     else:
                         match = Match(
-                            slot=slot,
+                            slot_id=slot.id,
                             left_resource_id=rsrc_id,
-                            right_resource=resource,
+                            right_resource_id=resource.id,
                         )
                     db.session.add(match)
 
@@ -167,7 +177,6 @@ def resource(id):
 
     # Show current schedule and availability.
     avail = {s.id: get_availability(s, not resource.left) for s in slots}
-    print(avail)
     return render_template(
         'schedule.html',
         slots=slots,
