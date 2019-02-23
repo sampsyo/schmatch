@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Slots</h2>
+<table>
+    <thead>
+        <tr>
+            <th>id</th>
+            <th>name</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for slot in slots %}
+        <tr>
+            <td>{{ slot.id }}</td>
+            <td>{{ slot.name }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

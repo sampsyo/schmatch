@@ -58,3 +58,9 @@ class Match(db.Model):
     right_resource = db.relationship('Resource')
 
     description = db.Column(db.String(256))
+
+
+@app.route('/slots')
+def show_slots():
+    slots = Slot.query.all()
+    return flask.render_template('slots.html', slots=slots)

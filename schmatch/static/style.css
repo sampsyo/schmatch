@@ -1,0 +1,40 @@
+body {
+    font-family: "Source Sans Pro", Verdana, Tahoma, Geneva, sans-serif;
+    max-width: 50rem;
+    margin: 1rem auto;
+}
+
+h1 {
+    margin: 0;
+}
+h2 {
+    margin: 1rem 0 0.5rem;
+}
+
+th, td {
+    padding: 0.1rem 1rem;
+}
+
+ul {
+    list-style: none;
+    padding-left: 0;
+}
+ul li {
+    margin-bottom: 0.4rem;
+}
+
+pre {
+    margin: 0;
+    overflow-x: auto;
+}
+
+form {
+    margin-bottom: 1rem;
+}
+form p {
+    display: inline-block;
+    margin: 0;
+}
+form p.submit {
+    display: block;
+}
