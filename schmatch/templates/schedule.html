@@ -14,6 +14,11 @@
             <td>{{ slot.name }}</td>
             <td>
                 {{ schedule[slot.id] }}
+                <ul>
+                    {% for r in availability[slot.id] %}
+                        {{ r.name }}
+                    {% endfor %}
+                </ul>
             </td>
         </tr>
         {% endfor %}

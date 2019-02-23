@@ -42,6 +42,8 @@ class Slot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256))
 
+    matches = db.relationship("Match", lazy=True)
+
 
 class Match(db.Model):
     """A *match* describes the resource binding in a given slot. It can
@@ -58,14 +60,14 @@ class Match(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     slot_id = db.Column(db.Integer, db.ForeignKey('slot.id'))
-    slot = db.relationship('Slot')
+    slot = db.relationship('Slot', lazy=True)
 
     left_resource_id = db.Column(db.Integer, db.ForeignKey('resource.id'))
-    left_resource = db.relationship('Resource',
+    left_resource = db.relationship('Resource', lazy=True,
                                     foreign_keys=[left_resource_id])
 
     right_resource_id = db.Column(db.Integer, db.ForeignKey('resource.id'))
-    right_resource = db.relationship('Resource',
+    right_resource = db.relationship('Resource', lazy=True,
                                      foreign_keys=[right_resource_id])
 
     description = db.Column(db.String(256))
@@ -80,6 +82,24 @@ def get_schedule(resource, slots):
         assert sched[match.slot.id] is None
         sched[match.slot.id] = match
     return sched
+
+
+def get_availability(slot, left=False):
+    """Get a list of the resources that are available in a given slot.
+    """
+    # Find all the resource IDs that are taken in this slot.
+    if left:
+        taken_resources = [m.left_resource.id for m in slot.matches]
+    else:
+        taken_resources = [m.right_resource.id for m in slot.matches]
+    taken_resources = [i for i in taken_resources if i is not None]
+
+    # Get all the resources not in this list.
+    if left:
+        rsrcs = Resource.query.filter_by(left=True)
+    else:
+        rsrcs = Resource.query.filter_by(left=False)
+    return rsrcs.filter(~Resource.id.in_(taken_resources)).all()
 
 
 @app.route('/slots', methods=['GET', 'POST'])
@@ -113,9 +133,12 @@ def resources():
 def resource(id):
     resource = Resource.query.get(id)
     slots = Slot.query.all()
+    avail = {s.id: get_availability(s, not resource.left) for s in slots}
+    print(avail)
     return render_template(
         'schedule.html',
         slots=slots,
         resource=resource,
         schedule=get_schedule(resource, slots),
+        availability=avail,
     )
