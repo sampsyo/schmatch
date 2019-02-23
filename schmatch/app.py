@@ -1,5 +1,6 @@
-import flask
 import os
+import flask
+from flask import request, render_template
 from flask_sqlalchemy import SQLAlchemy
 
 # Our Flask application.
@@ -62,7 +63,13 @@ class Match(db.Model):
     description = db.Column(db.String(256))
 
 
-@app.route('/slots')
+@app.route('/slots', methods=['GET', 'POST'])
 def show_slots():
+    if request.method == 'POST':
+        slot = Slot(name=request.form['name'])
+        db.session.add(slot)
+        db.session.commit()
+
+    # Show all the slots.
     slots = Slot.query.all()
-    return flask.render_template('slots.html', slots=slots)
+    return render_template('slots.html', slots=slots)
