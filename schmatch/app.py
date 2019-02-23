@@ -30,9 +30,9 @@ class Resource(db.Model):
         """Get a query for all the matches involving this resource.
         """
         if self.left:
-            return Match.query.filter_by(left_resource_id=self.id)
+            return Match.query.filter_by(left_resource=self)
         else:
-            return Match.query.filter_by(right_resource_id=self.id)
+            return Match.query.filter_by(right_resource=self)
 
 
 class Slot(db.Model):
@@ -151,15 +151,15 @@ def resource(id):
                     rsrc_id = int(slot_value)
                     if resource.left:
                         match = Match(
-                            slot_id=slot.id,
-                            left_resource_id=resource.id,
+                            slot=slot,
+                            left_resource=resource,
                             right_resource_id=rsrc_id,
                         )
                     else:
                         match = Match(
-                            slot_id=slot.id,
+                            slot=slot,
                             left_resource_id=rsrc_id,
-                            right_resource_id=resource.id,
+                            right_resource=resource,
                         )
                     db.session.add(match)
 
