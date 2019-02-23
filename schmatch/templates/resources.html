@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>"Left" Resources</h2>
+<ul>
+    {% for resource in resources %}
+    {% if resource.left %}
+    <li>
+        {{ resource.name }}
+    </li>
+    {% endif %}
+    {% endfor %}
+</ul>
+
+<form method="POST" action="">
+    <input type="text" name="name">
+    <input type="hidden" name="side" value="left">
+    <input type="submit" value="Add">
+</form>
+
+<h2>"Right" Resources</h2>
+<ul>
+    {% for resource in resources %}
+    {% if not resource.left %}
+    <li>
+        {{ resource.name }}
+    </li>
+    {% endif %}
+    {% endfor %}
+</ul>
+
+<form method="POST" action="">
+    <input type="text" name="name">
+    <input type="hidden" name="side" value="right">
+    <input type="submit" value="Add">
+</form>
+{% endblock %}

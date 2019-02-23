@@ -73,3 +73,17 @@ def show_slots():
     # Show all the slots.
     slots = Slot.query.all()
     return render_template('slots.html', slots=slots)
+
+@app.route('/', methods=['GET', 'POST'])
+def show_resources():
+    if request.method == 'POST':
+        resource = Resource(
+            name=request.form['name'],
+            left=request.form['side'] == 'left',
+        )
+        db.session.add(resource)
+        db.session.commit()
+
+    # List the resources.
+    resources = Resource.query.all()
+    return render_template('resources.html', resources=resources)
