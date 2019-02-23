@@ -15,6 +15,6 @@ Create the initial database:
 
 Run a development server:
 
-    $ FLASK_APP=schmatch.server pipenv run flask run
+    $ FLASK_APP=schmatch pipenv run flask run
 
 [pipenv]: https://pipenv.readthedocs.io/en/latest/
