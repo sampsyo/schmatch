@@ -14,11 +14,19 @@
             <td>{{ slot.name }}</td>
             <td>
                 {{ schedule[slot.id] }}
-                <ul>
+                <select name="slot[{{slot.id}}]">
+                    <option value="none"
+                        {%- if not schedule[slot.id] %} selected{% endif -%}>
+                        (free)
+                    </option>
                     {% for r in availability[slot.id] %}
+                    <option value="{{ r.id }}"
+                        {%- if schedule[slot.id].id == r.id %} selected
+                        {%- endif -%}>
                         {{ r.name }}
+                    </option>
                     {% endfor %}
-                </ul>
+                </select>
             </td>
         </tr>
         {% endfor %}
