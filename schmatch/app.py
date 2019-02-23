@@ -26,6 +26,24 @@ class Resource(db.Model):
     name = db.Column(db.String(256))
     left = db.Column(db.Boolean())
 
+    def matches(self):
+        """Get a query for all the matches involving this resource.
+        """
+        if self.left:
+            return Match.query.filter_by(left_resource_id=self.id)
+        else:
+            return Match.query.filter_by(right_resource_id=self.id)
+
+    def schedule(self, slots):
+        """Given a list of slots, get a mapping from slot IDs to matches
+        involving this resource (or None if there is no match in the
+        slot).
+        """
+        sched = {s.id: None for s in slots}
+        for match in self.matches().all():
+            assert sched[match.slot.id] is None
+            sched[match.slot.id] = match
+        return sched
 
 class Slot(db.Model):
     """A *slot* is a context in which resources can be matched in a
@@ -64,7 +82,7 @@ class Match(db.Model):
 
 
 @app.route('/slots', methods=['GET', 'POST'])
-def show_slots():
+def slots():
     if request.method == 'POST':
         slot = Slot(name=request.form['name'])
         db.session.add(slot)
@@ -74,8 +92,9 @@ def show_slots():
     slots = Slot.query.all()
     return render_template('slots.html', slots=slots)
 
+
 @app.route('/', methods=['GET', 'POST'])
-def show_resources():
+def resources():
     if request.method == 'POST':
         resource = Resource(
             name=request.form['name'],
@@ -87,3 +106,15 @@ def show_resources():
     # List the resources.
     resources = Resource.query.all()
     return render_template('resources.html', resources=resources)
+
+
+@app.route('/schedules/<int:id>')
+def resource(id):
+    resource = Resource.query.get(id)
+    slots = Slot.query.all()
+    return render_template(
+        'schedule.html',
+        slots=slots,
+        resource=resource,
+        schedule=resource.schedule(slots),
+    )

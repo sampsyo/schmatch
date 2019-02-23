@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ resource.name }}</h2>
+<table>
+    <thead>
+        <tr>
+            <th>slot</th>
+            <th>match</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for slot in slots %}
+        <tr>
+            <td>{{ slot.name }}</td>
+            <td>
+                {{ schedule[slot.id] }}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

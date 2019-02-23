@@ -5,7 +5,9 @@
     {% for resource in resources %}
     {% if resource.left %}
     <li>
+        <a href="{{ url_for('resource', id=resource.id) }}">
         {{ resource.name }}
+        </a>
     </li>
     {% endif %}
     {% endfor %}
@@ -22,7 +24,9 @@
     {% for resource in resources %}
     {% if not resource.left %}
     <li>
+        <a href="{{ url_for('resource', id=resource.id) }}">
         {{ resource.name }}
+        </a>
     </li>
     {% endif %}
     {% endfor %}
