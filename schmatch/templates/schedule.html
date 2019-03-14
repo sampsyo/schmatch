@@ -11,15 +11,22 @@
     </thead>
     <tbody>
         {% for slot in slots %}
+        {% set match = schedule[slot.id] %}
         <tr>
             <td>{{ slot.name }}</td>
             <td>
                 <select name="slot_{{slot.id}}">
                     <option value="none"
-                        {%- if not schedule[slot.id] %} selected{% endif -%}>
+                        {%- if not match %} selected{% endif -%}>
                         (free)
                     </option>
-                    {% if schedule[slot.id] %}
+
+                    <option value="custom"
+                        {%- if match.description %} selected{% endif -%}>
+                        (custom)
+                    </option>
+
+                    {% if match and not match.description %}
                     {% if resource.left %}
                     {% set other = schedule[slot.id].right_resource %}
                     {% else %}
@@ -29,12 +36,17 @@
                         {{ other.name }}
                     </option>
                     {% endif %}
+
                     {% for other in availability[slot.id] %}
                     <option value="{{ other.id }}">
                         {{ other.name }}
                     </option>
                     {% endfor %}
                 </select>
+
+                <input type="text" name="description_{{ slot.id }}"
+                   {%- if match and match.description -%}
+                   value="{{ match.description }}"{% endif %}>
             </td>
         </tr>
         {% endfor %}

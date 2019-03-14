@@ -154,10 +154,27 @@ def resource(id):
             if slot_key in request.form:
                 slot_value = request.form[slot_key]
 
-                # The slot value is either "none" or the ID of an entity
-                # to schedule.
-                if slot_value != 'none':
-                    # Add a match in this slot.
+                # The slot value is either "none", "custom", or the ID of an
+                # entity to schedule.
+                if slot_value == 'custom':
+                    # Add a custom match in this slot.
+                    desc = request.form['description_{}'.format(slot.id)]
+                    if resource.left:
+                        match = Match(
+                            slot_id=slot.id,
+                            left_resource_id=resource.id,
+                            description=desc,
+                        )
+                    else:
+                        match = Match(
+                            slot_id=slot.id,
+                            right_resource_id=resource.id,
+                            description=desc,
+                        )
+                    db.session.add(match)
+
+                elif slot_value != 'none':
+                    # Add a resource match in this slot.
                     rsrc_id = int(slot_value)
                     if resource.left:
                         match = Match(
